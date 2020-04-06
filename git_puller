@@ -23,7 +23,7 @@ else
     git -C $TARGET_DIR checkout -f $BRANCH_NAME
     NEW_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
 
-    if [ "$OLD_VERSION" -eq "$NEW_VERSION" ]; then
+    if [ "$OLD_VERSION" == "$NEW_VERSION" ]; then
         exit 1
     else
         exit
