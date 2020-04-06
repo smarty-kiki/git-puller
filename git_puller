@@ -18,10 +18,10 @@ if [ ! -d "$TARGET_DIR" ];then
     git -C $TARGET_DIR checkout -f $BRANCH_NAME
     exit
 else
-    OLD_VERSION=git -C $TARGET_DIR rev-parse HEAD
+    OLD_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
     git -C $TARGET_DIR pull origin $BRANCH_NAME
     git -C $TARGET_DIR checkout -f $BRANCH_NAME
-    NEW_VERSION=git -C $TARGET_DIR rev-parse HEAD
+    NEW_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
 
     if [ "$OLD_VERSION" -eq "$NEW_VERSION" ]; then
         exit 1
