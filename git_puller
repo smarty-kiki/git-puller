@@ -16,7 +16,7 @@ if [ ! -d "$TARGET_DIR" ];then
     mkdir -p $TARGET_DIR
     git clone $GIT_REPO_URL $TARGET_DIR
     git -C $TARGET_DIR checkout -f $BRANCH_NAME
-    exit
+    exit 0
 else
     OLD_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
     git -C $TARGET_DIR pull origin $BRANCH_NAME
@@ -26,6 +26,6 @@ else
     if [ "$OLD_VERSION" == "$NEW_VERSION" ]; then
         exit 1
     else
-        exit
+        exit 0
     fi
 fi
