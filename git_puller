@@ -12,20 +12,28 @@ then
     exit 1
 fi
 
-if [ ! -d "$TARGET_DIR" ];then
-    mkdir -p $TARGET_DIR
-    git clone $GIT_REPO_URL $TARGET_DIR
-    git -C $TARGET_DIR checkout -f $BRANCH_NAME
-    exit 0
-else
-    OLD_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
-    git -C $TARGET_DIR pull origin $BRANCH_NAME
-    git -C $TARGET_DIR checkout -f $BRANCH_NAME
-    NEW_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
+LOCK_FILE=/tmp/${TARGET_DIR//\//\+}.lock
 
-    if [ "$OLD_VERSION" == "$NEW_VERSION" ]; then
-        exit 1
-    else
+{
+    flock -n 3
+    [ $? -eq 1 ] && { echo fail; exit; }
+
+    if [ ! -d "$TARGET_DIR" ];then
+        mkdir -p $TARGET_DIR
+        git clone $GIT_REPO_URL $TARGET_DIR
+        git -C $TARGET_DIR checkout -f $BRANCH_NAME
         exit 0
+    else
+        OLD_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
+        git -C $TARGET_DIR pull origin $BRANCH_NAME
+        git -C $TARGET_DIR checkout -f $BRANCH_NAME
+        NEW_VERSION=`git -C $TARGET_DIR rev-parse HEAD`
+
+        if [ "$OLD_VERSION" == "$NEW_VERSION" ]; then
+            exit 1
+        else
+            exit 0
+        fi
     fi
-fi
+
+} 3<>$LOCK_FILE
